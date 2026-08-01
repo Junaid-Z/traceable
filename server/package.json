@@ -9,6 +9,9 @@
   "scripts": {
     "start": "node dist/main.js",
     "dev": "tsx src/main.ts",
+    "migrate:make": "tsx src/scripts/migrate-make.ts",
+    "migrate:latest": "tsx src/scripts/migrate-latest.ts",
+    "test": "vitest ./src",
     "build": "tsup"
   },
   "dependencies": {
