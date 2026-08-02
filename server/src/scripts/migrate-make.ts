@@ -10,9 +10,10 @@ async function migrateMake() {
     const resultFileName = await connection.migrate.make(migrationName);
 
     console.log(`Migration successfully created: ${resultFileName}`);
+    await connection.destroy();
+    process.exit(0);
   } catch (e) {
     console.log(`Failed to create migration ${migrationName}`, e);
-  } finally {
     await connection.destroy();
     process.exit(1);
   }
