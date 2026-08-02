@@ -63,11 +63,13 @@ export class Column extends DatabaseEntity {
   }
 }
 
+export type TableColumnParams = Omit<ColumnParams, "tableName">;
+
 export interface TableParams<Columns extends string> extends Omit<
   DatabaseEntityParams,
   "parentName"
 > {
-  columns: Record<Columns, ColumnParams>;
+  columns: Record<Columns, TableColumnParams>;
   schemaName?: string;
 }
 
@@ -81,7 +83,7 @@ export abstract class Table<Columns extends string> extends DatabaseEntity {
     super({ name, alias, parentName });
     for (const key in columns) {
       const typeSafeKey = key as keyof typeof columns;
-      const typeSafeColumnParams = columns[typeSafeKey] as ColumnParams;
+      const typeSafeColumnParams = columns[typeSafeKey] as TableColumnParams;
 
       const tableIdentifier = alias ?? name;
       this.#columns[typeSafeKey] = new Column({
@@ -98,7 +100,7 @@ export interface ImmutableTableParams<Columns extends string> extends Omit<
   TableParams<Columns>,
   "columns"
 > {
-  defaultColumnConfig: Record<Columns, ColumnParams>;
+  defaultColumnConfig: Record<Columns, TableColumnParams>;
   columns?: Partial<Record<Columns, string>>;
 }
 
