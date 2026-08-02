@@ -11,9 +11,10 @@ async function migrateLatest() {
     ];
 
     console.log(batchNo, log);
+    await connection.destroy();
+    process.exit(0);
   } catch (e) {
     console.log("Error while running migrations", e);
-  } finally {
     await connection.destroy();
     process.exit(1);
   }
