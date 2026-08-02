@@ -2,7 +2,7 @@ import {
   ImmutableTable,
   type ImmutableTableParams,
   type TableColumnParams,
-} from "@shared/lib/database.lib.js";
+} from "../../shared/lib/database.lib.js";
 
 export const USER_TABLE_NAME = "user";
 

@@ -38,10 +38,6 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
-    "paths": {
-      "@shared/*": ["./src/shared/*"],
-      "@features/*": ["./src/features/*"]
-    }
+    "skipLibCheck": true
   }
 }
