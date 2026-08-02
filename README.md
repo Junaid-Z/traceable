@@ -7,6 +7,7 @@
 ![Fastify](https://img.shields.io/badge/Fastify-5.x-black?logo=fastify&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-7.x-blue?logo=typescript)
 ![pnpm](https://img.shields.io/badge/pnpm-Workspaces-orange?logo=pnpm)
+![vitest](https://img.shields.io/badge/vitest-4.x-00FF74?logo=vitest)
 ![Zod](https://img.shields.io/badge/Zod-3.x-3E67B1?logo=zod&logoColor=white)
 ![Knex.js](https://img.shields.io/badge/Knex.js-3.x-red?logo=knexdotjs&logoColor=white)
 ![TanStack Table](https://img.shields.io/badge/TanStack_Table-8.x-FF4154?logo=reacttable&logoColor=white)
