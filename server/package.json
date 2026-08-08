@@ -15,7 +15,6 @@
     "build": "tsup"
   },
   "dependencies": {
-    "@types/passport": "^1.0.17",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "envalid": "^8.2.0",
@@ -28,6 +27,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/node": "^26.1.2",
+    "@types/passport": "^1.0.17",
     "@types/pg": "^8.20.0",
     "tsc-alias": "^1.9.1",
     "tsup": "^8.5.1",
