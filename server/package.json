@@ -11,6 +11,8 @@
     "dev": "tsx --watch src/main.ts",
     "migrate:make": "tsx src/scripts/migrate-make.ts",
     "migrate:latest": "tsx src/scripts/migrate-latest.ts",
+    "seed:make": "tsx src/scripts/seed-make.ts",
+    "seed:run": "tsx src/scripts/seed-run.ts",
     "test": "vitest ./src",
     "build": "tsup"
   },

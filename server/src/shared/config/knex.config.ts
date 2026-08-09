@@ -17,6 +17,11 @@ export const knexConfig: Knex.Config = {
     directory: resolve(import.meta.dirname, "../../migrations"),
     extension: "ts",
   },
+  seeds: {
+    directory: resolve(import.meta.dirname, "../../seeds", env.NODE_ENV),
+    timestampFilenamePrefix: true,
+    extension: "ts",
+  },
 };
 
 export default knexConfig;
