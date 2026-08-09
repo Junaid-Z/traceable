@@ -4,7 +4,10 @@ export const env = cleanEnv(process.env, {
   POSTGRES_USER: str({ default: "postgres" }),
   POSTGRES_PASSWORD: str(),
   POSTGRES_DB: str({ default: "traceable" }),
-  NODE_ENV: str({ default: "development" }),
+  NODE_ENV: str({
+    default: "development",
+    choices: ["development", "production", "testing", "staging"],
+  }),
   POSTGRES_PORT: port({ default: 5432 }),
   POSTGRES_HOST: str({ default: "postgres" }),
   PORT: port({ default: 8080 }),
