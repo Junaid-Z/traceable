@@ -15,7 +15,7 @@ export async function deviceCreate(
   trx?: Knex.Transaction,
 ) {
   const { deviceNumber, deviceType, store } = params;
-  connection.transaction(
+  await connection.transaction(
     async (t) => {
       await t(DeviceTable.default.name).insert({
         [DeviceTable.default.columns.deviceNumber.name]: deviceNumber,
