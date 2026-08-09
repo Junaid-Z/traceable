@@ -10,8 +10,8 @@ export const defaultColumnConfig = {
   deviceNumber: {
     name: "device_number",
   },
-  deviceDepartment: {
-    name: "device_department",
+  deviceType: {
+    name: "device_type",
   },
 } satisfies Record<string, TableColumnParams>;
 
