@@ -15,17 +15,21 @@ export async function deviceCreate(
   trx?: Knex.Transaction,
 ) {
   const { deviceNumber, deviceType, store } = params;
-  await connection.transaction(
-    async (t) => {
-      await t(DeviceTable.default.name).insert({
-        [DeviceTable.default.columns.deviceNumber.name]: deviceNumber,
-        [DeviceTable.default.columns.deviceType.name]: deviceType,
-      });
-      await t(DeviceUserTable.default.name).insert({
-        [DeviceUserTable.default.columns.device.name]: deviceNumber,
-        [DeviceUserTable.default.columns.user.name]: store,
-      });
-    },
-    { connection: trx },
-  );
+  const client =
+    trx ??
+    (await connection.transaction(null, { doNotRejectOnRollback: true }));
+  try {
+    await client(DeviceTable.default.name).insert({
+      [DeviceTable.default.columns.deviceNumber.name]: deviceNumber,
+      [DeviceTable.default.columns.deviceType.name]: deviceType,
+    });
+    await client(DeviceUserTable.default.name).insert({
+      [DeviceUserTable.default.columns.device.name]: deviceNumber,
+      [DeviceUserTable.default.columns.user.name]: store,
+    });
+    if (!trx) await client.commit();
+  } catch (e) {
+    if (!trx) await client.rollback();
+    throw e;
+  }
 }
