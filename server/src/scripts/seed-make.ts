@@ -1,7 +1,6 @@
 import { connection } from "../shared/lib/connection.lib.js";
 
 async function seedMake() {
-  console.log(process.argv0, process.argv);
   const seedName = process.argv[2];
   try {
     if (!seedName) throw new Error("Seed name not provided");
