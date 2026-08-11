@@ -1,10 +1,14 @@
+import { DeviceUserTable } from "@features/device-user/device-user.table.js";
+import { DeviceTable } from "@features/device/device.table.js";
 import { connection } from "@shared/lib/connection.lib.js";
-import type { Knex } from "knex";
-import { DeviceTransferTable } from "./device-transfer.table.js";
 import { generateRandomPublicId } from "@shared/utils/id.utils.js";
 import { randomUUID } from "crypto";
-import { DeviceTable } from "@features/device/device.table.js";
-import { DeviceTransferCreateDeviceNotFoundError } from "./device-transfer.lib.js";
+import type { Knex } from "knex";
+import {
+  DeviceTransferCreateDeviceAlreadyPendingTransferError,
+  DeviceTransferCreateDeviceNotFoundError,
+} from "./device-transfer.lib.js";
+import { DeviceTransferTable } from "./device-transfer.table.js";
 
 export type DeviceTransferCreateParams = {
   deviceNumber: string;
@@ -21,6 +25,22 @@ export async function deviceTransferCreate(
     trx ??
     (await connection.transaction(null, { doNotRejectOnRollback: true }));
   try {
+    const foundDevice = await client(DeviceUserTable.default.name)
+      .select(
+        DeviceUserTable.default.columns.device,
+        DeviceUserTable.default.columns.user,
+      )
+      .where({
+        [DeviceUserTable.default.columns.device.name]: deviceNumber,
+        [DeviceUserTable.default.columns.user.name]: fromUser,
+      })
+      .first();
+    if (!foundDevice) {
+      throw new DeviceTransferCreateDeviceNotFoundError(
+        `Device not found in user (id=${fromUser})'s store`,
+      );
+    }
+
     const updateCount = await client(DeviceTable.default.name)
       .update({
         [DeviceTable.default.columns.isTransferring.name]: true,
@@ -30,9 +50,7 @@ export async function deviceTransferCreate(
         [DeviceTable.default.columns.isTransferring.name]: false,
       });
     if (updateCount === 0) {
-      throw new DeviceTransferCreateDeviceNotFoundError(
-        "Device not found or is pending transfer",
-      );
+      throw new DeviceTransferCreateDeviceAlreadyPendingTransferError();
     }
 
     const id = generateRandomPublicId();
