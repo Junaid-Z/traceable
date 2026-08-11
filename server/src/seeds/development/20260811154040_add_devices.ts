@@ -1,0 +1,31 @@
+import { DEVICE_TYPE } from "@features/device/device.constants.js";
+import { DeviceTable } from "@features/device/device.table.js";
+import type { Knex } from "knex";
+
+export async function seed(knex: Knex): Promise<void> {
+  await knex(DeviceTable.default.name)
+    .insert([
+      {
+        [DeviceTable.default.columns.deviceNumber.name]: "000000000000",
+        [DeviceTable.default.columns.deviceType.name]: DEVICE_TYPE.TypeA,
+      },
+      {
+        [DeviceTable.default.columns.deviceNumber.name]: "000000000001",
+        [DeviceTable.default.columns.deviceType.name]: DEVICE_TYPE.TypeB,
+      },
+      {
+        [DeviceTable.default.columns.deviceNumber.name]: "000000000002",
+        [DeviceTable.default.columns.deviceType.name]: DEVICE_TYPE.TypeA,
+      },
+      {
+        [DeviceTable.default.columns.deviceNumber.name]: "000000000003",
+        [DeviceTable.default.columns.deviceType.name]: DEVICE_TYPE.TypeB,
+      },
+      {
+        [DeviceTable.default.columns.deviceNumber.name]: "000000000004",
+        [DeviceTable.default.columns.deviceType.name]: DEVICE_TYPE.TypeA,
+      },
+    ])
+    .onConflict()
+    .ignore();
+}
