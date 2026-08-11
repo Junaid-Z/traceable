@@ -24,7 +24,7 @@ describe("deviceTransfer Create", function () {
 
       expect(transfer).toBeDefined();
     } finally {
-      trx.rollback();
+      await trx.rollback();
     }
   });
 });
