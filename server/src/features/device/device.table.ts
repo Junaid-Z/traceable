@@ -13,6 +13,9 @@ export const defaultColumnConfig = {
   deviceType: {
     name: "device_type",
   },
+  isTransferring: {
+    name: "is_transferring",
+  },
 } satisfies Record<string, TableColumnParams>;
 
 export interface DeviceTableParams extends Omit<
