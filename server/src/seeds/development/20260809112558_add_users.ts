@@ -12,7 +12,7 @@ export async function seed(knex: Knex): Promise<void> {
         [UserTable.default.columns.displayName.name]: "Junaid Zafar",
         [UserTable.default.columns.username.name]: "junaid-z",
         [UserTable.default.columns.password.name]:
-          "$2a$12$JtvNlDmjT.f0hot5AKfY3uYvDSph.M5lwo2HfvfmI.dLg.m28s/fO", //hash for passwpord123
+          "$2a$12$JtvNlDmjT.f0hot5AKfY3uYvDSph.M5lwo2HfvfmI.dLg.m28s/fO", //hash for password123
         [UserTable.default.columns.nic.name]: "4200012345678",
         [UserTable.default.columns.contact.name]: "923091234567",
         [UserTable.default.columns.role.name]: USER_ROLE.SUPER_USER,
