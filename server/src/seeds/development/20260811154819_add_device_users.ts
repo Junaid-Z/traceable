@@ -1,4 +1,5 @@
 import { DeviceUserTable } from "@features/device-user/device-user.table.js";
+import { DeviceTable } from "@features/device/device.table.js";
 import type { Knex } from "knex";
 
 export async function seed(knex: Knex): Promise<void> {
@@ -32,4 +33,16 @@ export async function seed(knex: Knex): Promise<void> {
     ])
     .onConflict()
     .ignore();
+
+  await knex(DeviceTable.default.name)
+    .update({
+      [DeviceTable.default.columns.isTransferring.name]: true,
+    })
+    .whereIn(DeviceTable.default.columns.deviceNumber.name, [
+      "000000000000",
+      "000000000001",
+      "000000000002",
+      "000000000003",
+      "000000000004",
+    ]);
 }
