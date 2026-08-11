@@ -21,7 +21,7 @@ describe("deviceTransfer Create", function () {
           [DeviceTransferTable.default.columns.publicId.name]: id,
         })
         .first();
-      console.log(id, transfer);
+
       expect(transfer).toBeDefined();
     } finally {
       trx.rollback();
