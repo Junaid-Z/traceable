@@ -4,29 +4,29 @@ import {
   type TableColumnParams,
 } from "@shared/lib/database.lib.js";
 
-export const TABLE_NAME = "device";
+export const TABLE_NAME = "device_user";
 
 export const defaultColumnConfig = {
-  deviceNumber: {
-    name: "device_number",
+  device: {
+    name: "device",
   },
-  deviceType: {
-    name: "device_type",
+  user: {
+    name: "user",
   },
 } satisfies Record<string, TableColumnParams>;
 
-export interface DeviceTableParams extends Omit<
+export interface DeviceUserParams extends Omit<
   ImmutableTableParams<keyof typeof defaultColumnConfig>,
   "name" | "defaultColumnConfig"
 > {}
 
-export class DeviceTable extends ImmutableTable<
+export class DeviceUserTable extends ImmutableTable<
   keyof typeof defaultColumnConfig
 > {
-  static default = new DeviceTable({
+  static default = new DeviceUserTable({
     schemaName: "public",
   });
-  constructor(params: DeviceTableParams) {
+  constructor(params: DeviceUserParams) {
     const { alias, columns, schemaName } = params;
     super({
       alias,

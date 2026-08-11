@@ -2,7 +2,7 @@ import {
   ImmutableTable,
   type ImmutableTableParams,
   type TableColumnParams,
-} from "../../shared/lib/database.lib.js";
+} from "@shared/lib/database.lib.js";
 
 export const TABLE_NAME = "device_transfer";
 
@@ -31,7 +31,7 @@ export interface DeviceTransferTableParams extends Omit<
 export class DeviceTransferTable extends ImmutableTable<
   keyof typeof defaultColumnConfig
 > {
-  default = new DeviceTransferTable({ schemaName: "public" });
+  static default = new DeviceTransferTable({ schemaName: "public" });
   constructor(params: DeviceTransferTableParams) {
     const { alias, columns, schemaName } = params;
     super({

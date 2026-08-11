@@ -11,11 +11,13 @@
     "dev": "tsx --watch src/main.ts",
     "migrate:make": "tsx src/scripts/migrate-make.ts",
     "migrate:latest": "tsx src/scripts/migrate-latest.ts",
+    "seed:make": "tsx src/scripts/seed-make.ts",
+    "seed:run": "tsx src/scripts/seed-run.ts",
     "test": "vitest ./src",
     "build": "tsup"
   },
   "dependencies": {
-    "@types/passport": "^1.0.17",
+    "@fastify/cookie": "^11.1.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "envalid": "^8.2.0",
@@ -29,6 +31,7 @@
     "@types/cors": "^2.8.19",
     "@types/node": "^26.1.2",
     "@types/pg": "^8.20.0",
+    "tsc-alias": "^1.9.1",
     "tsup": "^8.5.1",
     "tsx": "^4.23.1",
     "typescript": "^7.0.2",
