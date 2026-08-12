@@ -1,13 +1,15 @@
-import { describe, expect, it } from "vitest";
-import { deviceTransferCreate } from "./device-transfer.service.js";
-import { connection } from "@shared/lib/connection.lib.js";
-import { DeviceTransferTable } from "./device-transfer.table.js";
 import { DeviceTable } from "@features/device/device.table.js";
+import { connection } from "@shared/lib/connection.lib.js";
+import { describe, expect, it } from "vitest";
 import {
   DeviceTransferCreateDeviceAlreadyPendingTransferError,
   DeviceTransferCreateDeviceNotFoundError,
 } from "./device-transfer.lib.js";
-import { escapeSqlLike } from "@shared/utils/sql.utils.js";
+import {
+  deviceTransferCreate,
+  deviceTransferSearch,
+} from "./device-transfer.service.js";
+import { DeviceTransferTable } from "./device-transfer.table.js";
 
 describe("deviceTransfer Create", function () {
   it("Should create a transfer", async function () {
@@ -77,7 +79,7 @@ describe("deviceTransfer Create", function () {
     }
   });
 
-  it.only("Should throw device not found error", async function () {
+  it("Should throw device not found error", async function () {
     const trx = await connection.transaction({ doNotRejectOnRollback: true });
     try {
       const deviceTransferCreatePromise = deviceTransferCreate(
@@ -94,6 +96,92 @@ describe("deviceTransfer Create", function () {
       );
     } finally {
       await trx.rollback();
+    }
+  });
+});
+
+describe("deviceTransfer Search", function () {
+  it("Should get transfer by id", async function () {
+    const transfers = await deviceTransferSearch({
+      query: { id: "00000000-0000-0000-0000-000000000000" },
+    });
+
+    expect(transfers.length).toBe(1);
+    expect(transfers[0]).toBeDefined();
+    expect(transfers[0]?.publicId).toBe("00000000");
+  });
+
+  it("Should get transfer by public id", async function () {
+    const transfers = await deviceTransferSearch({
+      query: { publicId: "00000000" },
+    });
+
+    expect(transfers.length).toBe(1);
+    expect(transfers[0]).toBeDefined();
+    expect(transfers[0]?.publicId).toBe("00000000");
+  });
+
+  it("Should get transfer by partial deviceNumber", async function () {
+    const transfers = await deviceTransferSearch({
+      query: { deviceNumber: "00000000000" },
+      meta: { exactDeviceNumberMatch: false, limit: 1 },
+    });
+
+    for (let i = 0; i < transfers.length; i++) {
+      expect(transfers[i]).toBeDefined();
+      expect(transfers[i]?.deviceNumber.startsWith("00000000")).toBe(true);
+    }
+  });
+
+  it("Should get completed transfers only", async function () {
+    const transfers = await deviceTransferSearch({
+      meta: { isComplete: true, limit: 10 },
+    });
+
+    for (let i = 0; i < transfers.length; i++) {
+      expect.soft(transfers[i]).toBeDefined();
+      expect.soft(transfers[i]?.completedAt !== null).toBe(true);
+    }
+  });
+
+  it("Should get transfers where provided user is either sender or receiver", async function () {
+    const user = "00000000-0000-0000-0000-000000000001";
+    const transfers = await deviceTransferSearch({
+      query: { user },
+      meta: { limit: 10 },
+    });
+
+    for (let i = 0; i < transfers.length; i++) {
+      expect.soft(transfers[i]).toBeDefined();
+      expect
+        .soft(transfers[i]?.toUser === user || transfers[i]?.fromUser === user)
+        .toBeTruthy();
+    }
+  });
+
+  it("Should get transfers where provided user is strictly the receiver", async function () {
+    const user = "00000000-0000-0000-0000-000000000001";
+    const transfers = await deviceTransferSearch({
+      query: { user: { toUser: user } },
+      meta: { limit: 10 },
+    });
+
+    for (let i = 0; i < transfers.length; i++) {
+      expect.soft(transfers[i]).toBeDefined();
+      expect.soft(transfers[i]?.toUser === user).toBeTruthy();
+    }
+  });
+
+  it("Should get transfers where provided user is strictly the sender", async function () {
+    const user = "00000000-0000-0000-0000-000000000001";
+    const transfers = await deviceTransferSearch({
+      query: { user: { fromUser: user } },
+      meta: { limit: 10 },
+    });
+
+    for (let i = 0; i < transfers.length; i++) {
+      expect.soft(transfers[i]).toBeDefined();
+      expect.soft(transfers[i]?.fromUser === user).toBeTruthy();
     }
   });
 });
