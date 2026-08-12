@@ -7,6 +7,7 @@ import {
   DeviceTransferCreateDeviceAlreadyPendingTransferError,
   DeviceTransferCreateDeviceNotFoundError,
 } from "./device-transfer.lib.js";
+import { escapeSqlLike } from "@shared/utils/sql.utils.js";
 
 describe("deviceTransfer Create", function () {
   it("Should create a transfer", async function () {
