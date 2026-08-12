@@ -27,8 +27,8 @@ export async function deviceTransferCreate(
   try {
     const foundDevice = await client(DeviceUserTable.default.name)
       .select(
-        DeviceUserTable.default.columns.device,
-        DeviceUserTable.default.columns.user,
+        DeviceUserTable.default.columns.device.name,
+        DeviceUserTable.default.columns.user.name,
       )
       .where({
         [DeviceUserTable.default.columns.device.name]: deviceNumber,
