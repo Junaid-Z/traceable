@@ -7,6 +7,7 @@ import type { Knex } from "knex";
 import {
   DeviceTransferCreateDeviceAlreadyPendingTransferError,
   DeviceTransferCreateDeviceNotFoundError,
+  DeviceTransferCreateDeviceSenderSameAsReceiverError,
 } from "./device-transfer.lib.js";
 import { DeviceTransferTable } from "./device-transfer.table.js";
 import { escapeSqlLike } from "@shared/utils/sql.utils.js";
@@ -23,6 +24,12 @@ export async function deviceTransferCreate(
   trx?: Knex.Transaction,
 ) {
   const { deviceNumber, fromUser, toUser } = params;
+  if (fromUser === toUser) {
+    throw new DeviceTransferCreateDeviceSenderSameAsReceiverError(
+      `fromUser (${fromUser}) is same as toUser (${toUser})`,
+    );
+  }
+
   const client =
     trx ??
     (await connection.transaction(null, { doNotRejectOnRollback: true }));

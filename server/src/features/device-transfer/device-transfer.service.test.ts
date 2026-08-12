@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   DeviceTransferCreateDeviceAlreadyPendingTransferError,
   DeviceTransferCreateDeviceNotFoundError,
+  DeviceTransferCreateDeviceSenderSameAsReceiverError,
 } from "./device-transfer.lib.js";
 import {
   deviceTransferCreate,
@@ -31,6 +32,26 @@ describe("deviceTransfer Create", function () {
         .first();
 
       expect(transfer).toBeDefined();
+    } finally {
+      await trx.rollback();
+    }
+  });
+
+  it("Should throw DeviceTransferCreateDeviceSenderSameAsReceiverError", async function () {
+    const trx = await connection.transaction({ doNotRejectOnRollback: true });
+    try {
+      const transferCreatePromise = deviceTransferCreate(
+        {
+          deviceNumber: "1234567890",
+          fromUser: "00000000-0000-0000-0000-000000000000",
+          toUser: "00000000-0000-0000-0000-000000000000",
+        },
+        trx,
+      );
+
+      await expect(transferCreatePromise).rejects.toBeInstanceOf(
+        DeviceTransferCreateDeviceSenderSameAsReceiverError,
+      );
     } finally {
       await trx.rollback();
     }
