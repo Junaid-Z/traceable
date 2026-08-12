@@ -22,9 +22,6 @@ export abstract class DatabaseEntity {
   get alias() {
     return this.#alias;
   }
-  get originalName() {
-    return this.name;
-  }
   get originalRef(): Ref {
     const isParentProvided = Boolean(this.parentName);
     const originalRef = connection.ref(
