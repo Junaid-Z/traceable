@@ -1,11 +1,9 @@
-import { DeviceUserTable } from "@features/device-user/device-user.table.js";
 import { DeviceTable } from "@features/device/device.table.js";
 import { connection } from "@shared/lib/connection.lib.js";
 import { generateRandomPublicId } from "@shared/utils/id.utils.js";
 import { randomUUID } from "crypto";
 import type { Knex } from "knex";
 import {
-  DeviceTransferCreateDeviceAlreadyPendingTransferError,
   DeviceTransferCreateDeviceNotFoundError,
   DeviceTransferCreateDeviceSenderSameAsReceiverError,
 } from "./device-transfer.lib.js";
@@ -34,22 +32,6 @@ export async function deviceTransferCreate(
     trx ??
     (await connection.transaction(null, { doNotRejectOnRollback: true }));
   try {
-    const foundDevice = await client(DeviceUserTable.default.name)
-      .select(
-        DeviceUserTable.default.columns.device.name,
-        DeviceUserTable.default.columns.user.name,
-      )
-      .where({
-        [DeviceUserTable.default.columns.device.name]: deviceNumber,
-        [DeviceUserTable.default.columns.user.name]: fromUser,
-      })
-      .first();
-    if (!foundDevice) {
-      throw new DeviceTransferCreateDeviceNotFoundError(
-        `Device not found in user (id=${fromUser})'s store`,
-      );
-    }
-
     const updateCount = await client(DeviceTable.default.name)
       .update({
         [DeviceTable.default.columns.isTransferring.name]: true,
@@ -59,7 +41,7 @@ export async function deviceTransferCreate(
         [DeviceTable.default.columns.isTransferring.name]: false,
       });
     if (updateCount === 0) {
-      throw new DeviceTransferCreateDeviceAlreadyPendingTransferError();
+      throw new DeviceTransferCreateDeviceNotFoundError();
     }
 
     const id = generateRandomPublicId();

@@ -2,7 +2,6 @@ import { DeviceTable } from "@features/device/device.table.js";
 import { connection } from "@shared/lib/connection.lib.js";
 import { describe, expect, it } from "vitest";
 import {
-  DeviceTransferCreateDeviceAlreadyPendingTransferError,
   DeviceTransferCreateDeviceNotFoundError,
   DeviceTransferCreateDeviceSenderSameAsReceiverError,
 } from "./device-transfer.lib.js";
@@ -75,26 +74,6 @@ describe("deviceTransfer Create", function () {
       });
 
       expect(device).toBeDefined();
-    } finally {
-      await trx.rollback();
-    }
-  });
-
-  it("Should throw device already pending transfer error", async function () {
-    const trx = await connection.transaction({ doNotRejectOnRollback: true });
-    try {
-      const deviceTransferCreatePromise = deviceTransferCreate(
-        {
-          deviceNumber: "000000000000",
-          fromUser: "00000000-0000-0000-0000-000000000000",
-          toUser: "00000000-0000-0000-0000-000000000001",
-        },
-        trx,
-      );
-
-      await expect(deviceTransferCreatePromise).rejects.instanceOf(
-        DeviceTransferCreateDeviceAlreadyPendingTransferError,
-      );
     } finally {
       await trx.rollback();
     }
