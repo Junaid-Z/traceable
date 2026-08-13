@@ -79,10 +79,10 @@ describe("deviceTransfer Create", function () {
     }
   });
 
-  it("Should throw device not found error", async function () {
+  it("Should fail when the device does not exist in the system", async function () {
     const trx = await connection.transaction({ doNotRejectOnRollback: true });
     try {
-      const deviceTransferCreatePromise = deviceTransferCreate(
+      const promise = deviceTransferCreate(
         {
           deviceNumber: "000000000010",
           fromUser: "00000000-0000-0000-0000-000000000000",
@@ -91,7 +91,48 @@ describe("deviceTransfer Create", function () {
         trx,
       );
 
-      await expect(deviceTransferCreatePromise).rejects.instanceOf(
+      await expect(promise).rejects.instanceOf(
+        DeviceTransferCreateDeviceNotFoundError,
+      );
+    } finally {
+      await trx.rollback();
+    }
+  });
+
+  it("Should fail when the device does not belong to the sending user's store", async function () {
+    const trx = await connection.transaction({ doNotRejectOnRollback: true });
+    try {
+      const promise = deviceTransferCreate(
+        {
+          deviceNumber: "1234567890",
+          fromUser: "00000000-0000-0000-0000-000000000001",
+          toUser: "00000000-0000-0000-0000-000000000000",
+        },
+        trx,
+      );
+
+      await expect(promise).rejects.instanceOf(
+        DeviceTransferCreateDeviceNotFoundError,
+      );
+      // Note: Consider creating a more specific error for this domain state if possible!
+    } finally {
+      await trx.rollback();
+    }
+  });
+
+  it("Should fail when the device is already locked in a pending transfer", async function () {
+    const trx = await connection.transaction({ doNotRejectOnRollback: true });
+    try {
+      const promise = deviceTransferCreate(
+        {
+          deviceNumber: "000000000001",
+          fromUser: "00000000-0000-0000-0000-000000000001",
+          toUser: "00000000-0000-0000-0000-000000000000",
+        },
+        trx,
+      );
+
+      await expect(promise).rejects.instanceOf(
         DeviceTransferCreateDeviceNotFoundError,
       );
     } finally {
