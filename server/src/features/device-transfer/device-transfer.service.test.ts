@@ -174,14 +174,39 @@ describe("deviceTransfer Search", function () {
     }
   });
 
-  it("Should get completed transfers only", async function () {
+  it("Should get pending transfers only", async function () {
     const transfers = await deviceTransferSearch({
-      meta: { isComplete: true, limit: 10 },
+      query: { stage: "pending" },
+      meta: { limit: 10 },
     });
 
     for (let i = 0; i < transfers.length; i++) {
       expect.soft(transfers[i]).toBeDefined();
-      expect.soft(transfers[i]?.completedAt !== null).toBe(true);
+      expect.soft(transfers[i]?.stage).toBe("pending");
+    }
+  });
+
+  it("Should get cancelled transfers only", async function () {
+    const transfers = await deviceTransferSearch({
+      query: { stage: "cancelled" },
+      meta: { limit: 10 },
+    });
+
+    for (let i = 0; i < transfers.length; i++) {
+      expect.soft(transfers[i]).toBeDefined();
+      expect.soft(transfers[i]?.stage).toBe("cancelled");
+    }
+  });
+
+  it("Should get completed transfers only", async function () {
+    const transfers = await deviceTransferSearch({
+      query: { stage: "completed" },
+      meta: { limit: 10 },
+    });
+
+    for (let i = 0; i < transfers.length; i++) {
+      expect.soft(transfers[i]).toBeDefined();
+      expect.soft(transfers[i]?.stage).toBe("completed");
     }
   });
 

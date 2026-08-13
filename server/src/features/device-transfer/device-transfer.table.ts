@@ -18,8 +18,8 @@ export const defaultColumnConfig = {
   fromUser: {
     name: "from_user",
   },
-  completedAt: {
-    name: "completed_at",
+  stage: {
+    name: "stage",
   },
 } satisfies Record<string, TableColumnParams>;
 

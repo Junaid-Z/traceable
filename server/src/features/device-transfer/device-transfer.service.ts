@@ -7,9 +7,12 @@ import {
   DeviceTransferCreateDeviceNotFoundError,
   DeviceTransferCreateDeviceSenderSameAsReceiverError,
 } from "./device-transfer.lib.js";
+import {
+  DEVICE_TRANSFER_STAGE,
+  deviceTransferSearchResultSchema,
+  type DeviceTransferStage,
+} from "./device-transfer.schemas.js";
 import { DeviceTransferTable } from "./device-transfer.table.js";
-import { escapeSqlLike } from "@shared/utils/sql.utils.js";
-import { deviceTransferSearchResultSchema } from "./device-transfer.schemas.js";
 
 export type DeviceTransferCreateParams = {
   deviceNumber: string;
@@ -52,7 +55,8 @@ export async function deviceTransferCreate(
       [DeviceTransferTable.default.columns.deviceNumber.name]: deviceNumber,
       [DeviceTransferTable.default.columns.fromUser.name]: fromUser,
       [DeviceTransferTable.default.columns.toUser.name]: toUser,
-      [DeviceTransferTable.default.columns.completedAt.name]: null,
+      [DeviceTransferTable.default.columns.stage.name]:
+        DEVICE_TRANSFER_STAGE.PENDING,
     });
     if (!trx) await client.commit();
 
@@ -74,11 +78,11 @@ export type DeviceTransferSearchParams = {
           toUser?: string;
         }
       | string;
+    stage?: DeviceTransferStage;
   };
   meta?: {
     limit?: number;
     offset?: number;
-    isComplete?: boolean;
   };
 };
 
@@ -89,7 +93,7 @@ const deviceTransferSearchTable = new DeviceTransferTable({
     deviceNumber: "deviceNumber",
     fromUser: "fromUser",
     toUser: "toUser",
-    completedAt: "completedAt",
+    stage: "stage",
   },
 });
 
@@ -98,8 +102,8 @@ export async function deviceTransferSearch(
   trx?: Knex.Transaction,
 ) {
   const { query = {}, meta = {} } = params;
-  const { id, deviceNumber, user, publicId } = query;
-  const { limit, offset, isComplete } = meta;
+  const { id, deviceNumber, user, publicId, stage } = query;
+  const { limit, offset } = meta;
   const client = trx ?? connection;
 
   const transfersQuery = client(DeviceTransferTable.default.name).select(
@@ -108,7 +112,7 @@ export async function deviceTransferSearch(
     deviceTransferSearchTable.columns.deviceNumber.aliasedRef,
     deviceTransferSearchTable.columns.fromUser.aliasedRef,
     deviceTransferSearchTable.columns.toUser.aliasedRef,
-    deviceTransferSearchTable.columns.completedAt.aliasedRef,
+    deviceTransferSearchTable.columns.stage.aliasedRef,
   );
 
   if (id) {
@@ -151,15 +155,8 @@ export async function deviceTransferSearch(
     );
   }
 
-  if (isComplete !== undefined && !isComplete) {
-    transfersQuery.whereNull(
-      DeviceTransferTable.default.columns.completedAt.name,
-    );
-  }
-  if (isComplete !== undefined && isComplete) {
-    transfersQuery.whereNotNull(
-      DeviceTransferTable.default.columns.completedAt.name,
-    );
+  if (stage) {
+    transfersQuery.where(DeviceTransferTable.default.columns.stage.name, stage);
   }
 
   if (limit !== undefined) {

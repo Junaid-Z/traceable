@@ -11,7 +11,7 @@ export async function seed(knex: Knex): Promise<void> {
         device_number: "000000000000",
         from_user: "00000000-0000-0000-0000-000000000000",
         to_user: "00000000-0000-0000-0000-000000000001",
-        completed_at: new Date(),
+        stage: "completed",
       },
       {
         id: "00000000-0000-0000-0000-000000000001",
@@ -19,7 +19,7 @@ export async function seed(knex: Knex): Promise<void> {
         device_number: "000000000001",
         from_user: "00000000-0000-0000-0000-000000000001",
         to_user: "00000000-0000-0000-0000-000000000000",
-        completed_at: null,
+        stage: "pending",
       },
       {
         id: "00000000-0000-0000-0000-000000000002",
@@ -27,7 +27,7 @@ export async function seed(knex: Knex): Promise<void> {
         device_number: "000000000002",
         from_user: "00000000-0000-0000-0000-000000000000",
         to_user: "00000000-0000-0000-0000-000000000001",
-        completed_at: new Date(),
+        stage: "completed",
       },
     ])
     .onConflict()
