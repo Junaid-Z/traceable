@@ -39,6 +39,7 @@ export async function deviceTransferCreate(
       .where({
         [DeviceTable.default.columns.deviceNumber.name]: deviceNumber,
         [DeviceTable.default.columns.isTransferring.name]: false,
+        [DeviceTable.default.columns.store.name]: fromUser,
       });
     if (updateCount === 0) {
       throw new DeviceTransferCreateDeviceNotFoundError();
