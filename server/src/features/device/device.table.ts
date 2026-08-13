@@ -13,6 +13,9 @@ export const defaultColumnConfig = {
   deviceType: {
     name: "device_type",
   },
+  store: {
+    name: "store",
+  },
   isTransferring: {
     name: "is_transferring",
   },
