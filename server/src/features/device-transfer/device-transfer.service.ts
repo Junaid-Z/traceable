@@ -79,7 +79,6 @@ export type DeviceTransferSearchParams = {
     limit?: number;
     offset?: number;
     isComplete?: boolean;
-    exactDeviceNumberMatch?: boolean;
   };
 };
 
@@ -100,7 +99,7 @@ export async function deviceTransferSearch(
 ) {
   const { query = {}, meta = {} } = params;
   const { id, deviceNumber, user, publicId } = query;
-  const { limit, offset, isComplete, exactDeviceNumberMatch } = meta;
+  const { limit, offset, isComplete } = meta;
   const client = trx ?? connection;
 
   const transfersQuery = client(DeviceTransferTable.default.name).select(
@@ -145,13 +144,7 @@ export async function deviceTransferSearch(
     });
   }
 
-  if (deviceNumber !== undefined && deviceNumber && !exactDeviceNumberMatch) {
-    transfersQuery.whereLike(
-      DeviceTransferTable.default.columns.deviceNumber.name,
-      escapeSqlLike(deviceNumber) + "%",
-    );
-  }
-  if (deviceNumber !== undefined && deviceNumber && exactDeviceNumberMatch) {
+  if (deviceNumber !== undefined && deviceNumber) {
     transfersQuery.where(
       DeviceTransferTable.default.columns.deviceNumber.name,
       deviceNumber,

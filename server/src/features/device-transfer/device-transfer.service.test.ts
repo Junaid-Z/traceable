@@ -162,15 +162,15 @@ describe("deviceTransfer Search", function () {
     expect(transfers[0]?.publicId).toBe("00000000");
   });
 
-  it("Should get transfer by partial deviceNumber", async function () {
+  it("Should get transfer by deviceNumber", async function () {
     const transfers = await deviceTransferSearch({
-      query: { deviceNumber: "00000000000" },
-      meta: { exactDeviceNumberMatch: false, limit: 1 },
+      query: { deviceNumber: "000000000001" },
+      meta: { limit: 10 },
     });
 
     for (let i = 0; i < transfers.length; i++) {
       expect(transfers[i]).toBeDefined();
-      expect(transfers[i]?.deviceNumber.startsWith("00000000")).toBe(true);
+      expect(transfers[i]?.deviceNumber === "000000000001").toBe(true);
     }
   });
 
