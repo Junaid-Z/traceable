@@ -9,3 +9,12 @@ export const deviceCreateSchema = z.object({
   deviceNumber: deviceNumberSchema,
   deviceType: deviceTypeSchema,
 });
+
+export const deviceSearchResultSchema = z.object({
+  deviceNumber: deviceNumberSchema,
+  deviceType: deviceTypeSchema,
+  isTransferring: z.boolean(),
+  store: z.string(),
+  username: z.string(),
+  displayName: z.string(),
+});
