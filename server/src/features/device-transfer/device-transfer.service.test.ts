@@ -1,14 +1,12 @@
 import { DeviceTable } from "@features/device/device.table.js";
 import { connection } from "@shared/lib/connection.lib.js";
 import { describe, expect, it } from "vitest";
+import { deviceTransferSearch } from "./device-transfer-search.service.js";
 import {
   DeviceTransferCreateDeviceNotFoundError,
   DeviceTransferCreateDeviceSenderSameAsReceiverError,
 } from "./device-transfer.lib.js";
-import {
-  deviceTransferCreate,
-  deviceTransferSearch,
-} from "./device-transfer.service.js";
+import { deviceTransferCreate } from "./device-transfer.service.js";
 import { DeviceTransferTable } from "./device-transfer.table.js";
 
 describe("deviceTransfer Create", function () {
