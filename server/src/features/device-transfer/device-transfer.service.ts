@@ -13,7 +13,6 @@ import {
   type DeviceTransferStage,
 } from "./device-transfer.schemas.js";
 import { DeviceTransferTable } from "./device-transfer.table.js";
-import e from "cors";
 
 export type DeviceTransferCreateParams = {
   deviceNumber: string;
