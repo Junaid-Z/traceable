@@ -198,6 +198,23 @@ describe("deviceTransfer Search", function () {
     }
   });
 
+  it("Should get cancelled or completed transfers only", async function () {
+    const transfers = await deviceTransferSearch({
+      query: { stage: ["cancelled", "completed"] },
+      meta: { limit: 10 },
+    });
+
+    for (let i = 0; i < transfers.length; i++) {
+      expect.soft(transfers[i]).toBeDefined();
+      expect
+        .soft(
+          transfers[i]?.stage === "completed" ||
+            transfers[i]?.stage === "cancelled",
+        )
+        .toBe(true);
+    }
+  });
+
   it("Should get completed transfers only", async function () {
     const transfers = await deviceTransferSearch({
       query: { stage: "completed" },

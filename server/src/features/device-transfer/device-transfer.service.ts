@@ -13,6 +13,7 @@ import {
   type DeviceTransferStage,
 } from "./device-transfer.schemas.js";
 import { DeviceTransferTable } from "./device-transfer.table.js";
+import e from "cors";
 
 export type DeviceTransferCreateParams = {
   deviceNumber: string;
@@ -78,7 +79,7 @@ export type DeviceTransferSearchParams = {
           toUser?: string;
         }
       | string;
-    stage?: DeviceTransferStage;
+    stage?: DeviceTransferStage | DeviceTransferStage[];
   };
   meta?: {
     limit?: number;
@@ -155,8 +156,14 @@ export async function deviceTransferSearch(
     );
   }
 
-  if (stage) {
+  if (stage && typeof stage === "string") {
     transfersQuery.where(DeviceTransferTable.default.columns.stage.name, stage);
+  } else if (stage && typeof stage === "object") {
+    transfersQuery.where(function (clause) {
+      for (const stg of stage) {
+        clause.orWhere(DeviceTransferTable.default.columns.stage.name, stg);
+      }
+    });
   }
 
   if (limit !== undefined) {
