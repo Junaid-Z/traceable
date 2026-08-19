@@ -6,8 +6,15 @@ import {
   DeviceTransferCreateDeviceNotFoundError,
   DeviceTransferCreateDeviceSenderSameAsReceiverError,
 } from "./device-transfer.lib.js";
-import { deviceTransferCreate } from "./device-transfer.service.js";
+import {
+  deviceTransferAccept,
+  deviceTransferCreate,
+} from "./device-transfer.service.js";
 import { DeviceTransferTable } from "./device-transfer.table.js";
+import {
+  DEVICE_TRANSFER_STAGE,
+  type DeviceTransferStage,
+} from "./device-transfer.schemas.js";
 
 describe("deviceTransfer Create", function () {
   it("Should create a transfer", async function () {
@@ -263,6 +270,54 @@ describe("deviceTransfer Search", function () {
     for (let i = 0; i < transfers.length; i++) {
       expect.soft(transfers[i]).toBeDefined();
       expect.soft(transfers[i]?.fromUser === user).toBeTruthy();
+    }
+  });
+});
+
+describe("deviceTransfer accept", function () {
+  it("should mark transfer as completed", async function () {
+    const trx = await connection.transaction({ doNotRejectOnRollback: true });
+    try {
+      await deviceTransferAccept(
+        {
+          id: "00000000-0000-0000-0000-000000000001",
+        },
+        trx,
+      );
+
+      const transfer = await trx(DeviceTransferTable.default.name)
+        .select([DeviceTransferTable.default.columns.stage.ref.as("stage")])
+        .where({
+          id: "00000000-0000-0000-0000-000000000001",
+        })
+        .first<{ stage: DeviceTransferStage }>();
+
+      expect(transfer.stage).toBe(DEVICE_TRANSFER_STAGE.COMPLETED);
+    } finally {
+      await trx.rollback();
+    }
+  });
+
+  it("should change device store", async function () {
+    const trx = await connection.transaction({ doNotRejectOnRollback: true });
+    try {
+      await deviceTransferAccept(
+        {
+          id: "00000000-0000-0000-0000-000000000001",
+        },
+        trx,
+      );
+
+      const device = await trx(DeviceTable.default.name)
+        .select([DeviceTable.default.columns.store.ref.as("store")])
+        .where({
+          [DeviceTable.default.columns.deviceNumber.name]: "000000000001",
+        })
+        .first<{ store: string }>();
+
+      expect(device.store).toBe("00000000-0000-0000-0000-000000000000");
+    } finally {
+      await trx.rollback();
     }
   });
 });

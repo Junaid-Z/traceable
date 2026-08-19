@@ -62,3 +62,51 @@ export async function deviceTransferCreate(
     throw e;
   }
 }
+
+export type DeviceTransferAcceptParams = {
+  id: string;
+};
+
+export async function deviceTransferAccept(
+  params: DeviceTransferAcceptParams,
+  trx?: Knex.Transaction,
+) {
+  const { id } = params;
+
+  const client =
+    trx ??
+    (await connection.transaction(null, { doNotRejectOnRollback: true }));
+  try {
+    const updatedTransfers = await client(DeviceTransferTable.default.name)
+      .update({
+        [DeviceTransferTable.default.columns.stage.name]:
+          DEVICE_TRANSFER_STAGE.COMPLETED,
+      })
+      .where({
+        [DeviceTransferTable.default.columns.id.name]: id,
+        [DeviceTransferTable.default.columns.stage.name]:
+          DEVICE_TRANSFER_STAGE.PENDING,
+      })
+      .returning<{ toUser: string; device: string }[]>([
+        DeviceTransferTable.default.columns.toUser.ref.as("toUser"),
+        DeviceTransferTable.default.columns.deviceNumber.ref.as("device"),
+      ]);
+    const transfer = updatedTransfers[0];
+    if (transfer === undefined) {
+      throw new Error("DeviceTransferNotFound");
+    }
+    const { device, toUser } = transfer;
+
+    await client(DeviceTable.default.name)
+      .update({
+        [DeviceTable.default.columns.store.name]: toUser,
+      })
+      .where({
+        [DeviceTable.default.columns.deviceNumber.name]: device,
+      });
+    if (!trx) await client.commit();
+  } catch (e) {
+    if (!trx) await client.rollback();
+    throw e;
+  }
+}
